@@ -4,7 +4,6 @@ import router from 'next/router';
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { authenticate, isAuth } from '../utils/authHelper';
-// import { GoogleLogin } from 'react-google-login';
 // import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 const Login = ({ history }) => {
@@ -18,27 +17,32 @@ const Login = ({ history }) => {
     setFormData({ ...formData, [text]: e.target.value });
   };
 
-  // const sendGoogleToken = (tokenId) => {
-  //   axios
-  //     .post(`${process.env.REACT_APP_API_URL}/googlelogin`, {
-  //       idToken: tokenId,
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data);
-  //       informParent(res);
-  //     })
-  //     .catch((error) => {
-  //       console.log('GOOGLE SIGNIN ERROR', error.response);
-  //     });
-  // };
+  const sendGoogleToken = (tokenId) => {
+    axios
+      .post(`/api/auth/googlelogin`, {
+        idToken: tokenId,
+      })
+      .then((res) => {
+        console.log(res.data);
+        informParent(res);
+      })
+      .catch((error) => {
+        console.log('GOOGLE SIGNIN ERROR', error.response);
+      });
+  };
 
-  // const informParent = (response) => {
-  //   authenticate(response, () => {
-  //     isAuth() && isAuth().role === 'admin'
-  //       ? history.push('/admin')
-  //       : history.push('/private');
-  //   });
-  // };
+  const informParent = (response) => {
+    authenticate(response, () => {
+      isAuth() && isAuth().role === 'admin'
+        ? router.push('/admin')
+        : router.push('/private');
+    });
+  };
+
+  const responseGoogle = (response) => {
+    console.log(response);
+    sendGoogleToken(response.tokenId);
+  };
 
   // const sendFacebookToken = (userID, accessToken) => {
   //   axios
@@ -53,10 +57,6 @@ const Login = ({ history }) => {
   //     .catch((error) => {
   //       console.log('GOOGLE SIGNIN ERROR', error.response);
   //     });
-  // };
-  // const responseGoogle = (response) => {
-  //   console.log(response);
-  //   sendGoogleToken(response.tokenId);
   // };
 
   // const responseFacebook = (response) => {
@@ -112,7 +112,7 @@ const Login = ({ history }) => {
             <div className='w-full flex-1 mt-8 text-indigo-500'>
               <div className='flex flex-col items-center'>
                 {/* <GoogleLogin
-                  clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
+                  clientId={`${process.env.GOOGLE_CLIENT}`}
                   onSuccess={responseGoogle}
                   onFailure={responseGoogle}
                   cookiePolicy={'single_host_origin'}
@@ -126,7 +126,8 @@ const Login = ({ history }) => {
                       </div>
                       <span className='ml-4'>Sign In with Google</span>
                     </button>
-                  )}/> */}
+                  )}
+                /> */}
                 {/* <FacebookLogin
                   appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`}
                   autoLoad={false}

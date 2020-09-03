@@ -4,12 +4,12 @@ import User from '../../../model/Users';
 import dbConnect from '../../../utils/dbConnect';
 import { errorHandler } from '../../../utils/dbErrorHandaling';
 import { validRegister } from '../../../utils/valid';
-const sgMail = require('@sendgrid/mail');
 const { validationResult } = require('express-validator');
-// import jwt from 'express-jwt';
+const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.MAIL_KEY);
 dbConnect();
+// import jwt from 'express-jwt';
 
 export default nc({
   onError(error, req, res) {
@@ -21,12 +21,12 @@ export default nc({
 }).post(validRegister, async (req, res) => {
   const { name, email, password } = req.body;
 
+  const errors = validationResult(req);
   const user = await User.findOne({ email });
   if (user)
     return res.status(400).json({
       errors: 'Email already taken',
     });
-  const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     const firstError = errors.array().map((err) => err.msg)[0];

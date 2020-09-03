@@ -2,6 +2,9 @@ import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import nc from 'next-connect';
 import User from '../../../model/Users';
+import dbConnect from '../../../utils/dbConnect';
+
+dbConnect();
 
 export default nc({
   onError(error, req, res) {
@@ -28,9 +31,7 @@ export default nc({
         return res.status(400).json({
           errors: 'User with that email does not exist. Please signup',
         });
-      }
-
-      if (!user.authenticate(password)) {
+      } else if (!user.authenticate(password)) {
         return res.status(400).json({
           errors: 'Email and password do not match',
         });
