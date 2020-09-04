@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 
 function resetpassword({ token }) {
-  console.log(token);
+  // console.log(token);
 
   const [formData, setFormData] = useState({
     password1: '',

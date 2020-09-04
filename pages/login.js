@@ -1,68 +1,28 @@
 import axios from 'axios';
 import Link from 'next/Link';
 import router from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { authenticate, isAuth } from '../utils/authHelper';
-// import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
-const Login = ({ history }) => {
+const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password1: '',
     textChange: 'Sign In',
   });
+
   const { email, password1, textChange } = formData;
+
+  useEffect(() => {
+    if (isAuth()) {
+      router.push('/');
+    }
+  }, []);
+
   const handleChange = (text) => (e) => {
     setFormData({ ...formData, [text]: e.target.value });
   };
-
-  const sendGoogleToken = (tokenId) => {
-    axios
-      .post(`/api/auth/googlelogin`, {
-        idToken: tokenId,
-      })
-      .then((res) => {
-        console.log(res.data);
-        informParent(res);
-      })
-      .catch((error) => {
-        console.log('GOOGLE SIGNIN ERROR', error.response);
-      });
-  };
-
-  const informParent = (response) => {
-    authenticate(response, () => {
-      isAuth() && isAuth().role === 'admin'
-        ? router.push('/admin')
-        : router.push('/private');
-    });
-  };
-
-  const responseGoogle = (response) => {
-    console.log(response);
-    sendGoogleToken(response.tokenId);
-  };
-
-  // const sendFacebookToken = (userID, accessToken) => {
-  //   axios
-  //     .post(`${process.env.REACT_APP_API_URL}/facebooklogin`, {
-  //       userID,
-  //       accessToken,
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data);
-  //       informParent(res);
-  //     })
-  //     .catch((error) => {
-  //       console.log('GOOGLE SIGNIN ERROR', error.response);
-  //     });
-  // };
-
-  // const responseFacebook = (response) => {
-  //   console.log(response);
-  //   sendFacebookToken(response.userID, response.accessToken);
-  // };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,9 +41,10 @@ const Login = ({ history }) => {
               password1: '',
               textChange: 'Submitted',
             });
-            isAuth() && isAuth().role === 'admin'
-              ? router.push('/admin')
-              : router.push('/private');
+            const { _id, name, email, role } = isAuth();
+            isAuth() && role === 'admin'
+              ? router.push(`/admin?userId=${_id}`)
+              : router.push(`/private?userId=${_id}`);
             toast.success(`Hey ${res.data.user.name}, Welcome back!`);
           });
         })
@@ -101,9 +62,9 @@ const Login = ({ history }) => {
       toast.error('Please fill all fields');
     }
   };
+
   return (
     <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
-      {/* {isAuth() ? <Redirect to='/' /> : null} */}
       <ToastContainer />
       <div className='max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
         <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
@@ -111,38 +72,6 @@ const Login = ({ history }) => {
             <h1 className='text-2xl xl:text-3xl font-extrabold'>Sign In</h1>
             <div className='w-full flex-1 mt-8 text-indigo-500'>
               <div className='flex flex-col items-center'>
-                {/* <GoogleLogin
-                  clientId={`${process.env.GOOGLE_CLIENT}`}
-                  onSuccess={responseGoogle}
-                  onFailure={responseGoogle}
-                  cookiePolicy={'single_host_origin'}
-                  render={(renderProps) => (
-                    <button
-                      onClick={renderProps.onClick}
-                      disabled={renderProps.disabled}
-                      className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline'>
-                      <div className=' p-2 rounded-full '>
-                        <i className='fab fa-google ' />
-                      </div>
-                      <span className='ml-4'>Sign In with Google</span>
-                    </button>
-                  )}
-                /> */}
-                {/* <FacebookLogin
-                  appId={`${process.env.REACT_APP_FACEBOOK_CLIENT}`}
-                  autoLoad={false}
-                  callback={responseFacebook}
-                  render={(renderProps) => (
-                    <button
-                      onClick={renderProps.onClick}
-                      className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5'>
-                      <div className=' p-2 rounded-full '>
-                        <i className='fab fa-facebook' />
-                      </div>
-                      <span className='ml-4'>Sign In with Facebook</span>
-                    </button>
-                  )}
-                /> */}
                 <a
                   className='w-full max-w-xs font-bold shadow-sm rounded-lg py-3
            bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5'
@@ -180,7 +109,7 @@ const Login = ({ history }) => {
                   <i className='fas fa-sign-in-alt  w-6  -ml-2' />
                   <span className='ml-3'>Sign In</span>
                 </button>
-                <Link href='/forgetPassword'>
+                <Link href='/forgetpassword'>
                   <a className='no-underline hover:underline text-indigo-500 text-md text-right absolute right-0  mt-2'>
                     Forget password?
                   </a>
