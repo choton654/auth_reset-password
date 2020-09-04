@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import router from 'next/router';
 import { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { signout } from '../utils/authHelper';
@@ -21,8 +20,7 @@ export default function Home() {
         <div className='lg:w-1/2 xl:w-8/12 p-6 sm:p-12'>
           <div className='mt-12 flex flex-col items-center'>
             <h1 className='text-2xl xl:text-2xl font-extrabold  text-center '>
-              Ultimate Auth with Email & Facebook & Google with diferent roles,
-              email verification & Forget passwored{' '}
+              WELCOME TO AUTH
             </h1>
             <div className='w-full flex-1 mt-8 text-indigo-500'>
               <div className='my-12 border-b text-center'>
@@ -49,23 +47,25 @@ export default function Home() {
                     <span className='ml-3'>Profile Dashbaord</span>
                   </a>
                 </Link>
-                <Link href={`/admin?userId=${userId}`}>
+                <Link href={`/admin`}>
                   <a className='mt-5 tracking-wide font-semibold bg-green-500 text-gray-100 w-full py-4 rounded-lg hover:bg-green-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'>
                     <i className='fas fa-sign-in-alt  w-6  -ml-2' />
                     <span className='ml-3'>Admin Dashbaord</span>
                   </a>
                 </Link>
-                <button
-                  onClick={() => {
-                    signout(() => {
-                      toast.error('Signout Successfully');
-                      router.push('/');
-                    });
-                  }}
-                  className='mt-5 tracking-wide font-semibold bg-pink-500 text-gray-100 w-full py-4 rounded-lg hover:bg-pink-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'>
-                  <i className='fas fa-sign-out-alt  w-6  -ml-2' />
-                  <span className='ml-3'>Signout</span>
-                </button>
+                {userId && (
+                  <button
+                    onClick={() => {
+                      signout(() => {
+                        toast.error('Signout Successfully');
+                        // router.reload();
+                      });
+                    }}
+                    className='mt-5 tracking-wide font-semibold bg-pink-500 text-gray-100 w-full py-4 rounded-lg hover:bg-pink-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none'>
+                    <i className='fas fa-sign-out-alt  w-6  -ml-2' />
+                    <span className='ml-3'>Signout</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

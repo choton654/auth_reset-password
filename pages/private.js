@@ -1,5 +1,6 @@
 import axios from 'axios';
 import cookie from 'cookie';
+import router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { getCookie, updateUser } from '../utils/authHelper';
@@ -144,16 +145,27 @@ privatepage.getInitialProps = async (ctx) => {
     ctx.req ? ctx.req.headers.cookie || '' : document.cookie,
   );
 
-  const { data } = await axios.get(
-    `http://localhost:3000/api/users/read?userId=${userId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+  if (token) {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/users/read?userId=${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    },
-  );
+    );
 
-  return { user: data };
+    return { user: data };
+  } else {
+    if (ctx.req) {
+      ctx.res.writeHead(302, { Location: '/login' });
+      ctx.res.end();
+    } else {
+      router.push('/login');
+    }
+
+    return {};
+  }
 };
 
 export default privatepage;
